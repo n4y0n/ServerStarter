@@ -152,12 +152,9 @@ class ServerStarter(args: Array<String>) {
 
         val forgeManager = LoaderManager(config)
         if (lockFile.checkShouldInstall(config) || installOnly) {
-            var packtype: IPackType? = null;
-            if (!config.modpack.usePaper) {
-                packtype = IPackType.createPackType(config.install.modpackFormat, config)
-                        ?: throw InitException("Unknown pack format given in config, shutting down.")
-                packtype.installPack()
-            }
+            val packtype = IPackType.createPackType(config.install.modpackFormat, config)
+                    ?: throw InitException("Unknown pack format given in config, shutting down.")
+            packtype.installPack()
             lockFile.packInstalled = true
             lockFile.packUrl = config.install.modpackUrl
             saveLockFile(lockFile)
@@ -168,8 +165,8 @@ class ServerStarter(args: Array<String>) {
                     val mcVersion = config.install.mcVersion;
                     forgeManager.installPaper(config.install.baseInstallPath, paperBuild, mcVersion);
                 } else {
-                    val forgeVersion = packtype.?getForgeVersion()
-                    val mcVersion = packtype.?getMCVersion()
+                    val forgeVersion: String = packtype.getForgeVersion()
+                    val mcVersion: String = packtype.getMCVersion()
                     forgeManager.installLoader(config.install.baseInstallPath, forgeVersion, mcVersion)
                 }
             }
