@@ -16,7 +16,7 @@ fi
                fi
                exit 0
 	else
-			export URL="https://github.com/Yoosk/ServerStarter/releases/download/v@@serverstarter-libVersion@@/serverstarter-@@serverstarter-libVersion@@.jar"
+			export URL="https://github.com/n4y0n/ServerStarter/releases/download/v@@serverstarter-libVersion@@/serverstarter-@@serverstarter-libVersion@@.jar"
 	fi
 		echo $URL
 		which wget >> /dev/null
