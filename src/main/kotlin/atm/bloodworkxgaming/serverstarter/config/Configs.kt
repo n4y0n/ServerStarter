@@ -14,7 +14,8 @@ data class LocalFile(
 
 data class ModpackConfig(
         var name: String = "",
-        var description: String = ""
+        var description: String = "",
+        var usePaper: Boolean = false
 )
 
 data class LaunchSettings(

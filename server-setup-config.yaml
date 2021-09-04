@@ -1,5 +1,5 @@
 # Version of the specs, only for internal usage if this format should ever change drastically
-_specver: 2
+_specver: 3
 
 # modpack related settings, changes the supposed to change the visual appearance of the launcher
 modpack:
@@ -9,13 +9,17 @@ modpack:
   # Description
   description: This is a awesome modpack about making examples.
 
+  # starts a PaperMC server ignoring all forge/fabric related stuff
+  # use only for vanilla
+  usePaper: false
+
 
 # settings regarding the installation of the modpack
 install:
   # version of minecraft, needs the exact version
   mcVersion: 1.16.4
 
-  # exact version of forge or fabric that is supposed to be used
+  # exact version of forge or fabric or paper if specified usePaper that is supposed to be used
   # if this value is a null value so ( ~, null, or "" ) then the version from the mod pack is going to be used
   loaderVersion: 0.6.1.51
 
@@ -23,6 +27,7 @@ install:
   # supports variables: {{@loaderversion@}} and {{@mcversion@}}
   # For forge: "http://files.minecraftforge.net/maven/net/minecraftforge/forge/{{@mcversion@}}-{{@loaderversion@}}/forge-{{@mcversion@}}-{{@loaderversion@}}-installer.jar"
   # For Fabric: "https://maven.fabricmc.net/net/fabricmc/fabric-installer/{{@loaderversion@}}/fabric-installer-{{@loaderversion@}}.jar"
+  # Fro PaperMC: "https://papermc.io/api/v2/projects/paper/versions/{{@mcversion@}}/builds/{{@loaderversion@}}/downloads/paper-{{@mcversion@}}-{{@loaderversion@}}.jar"
   installerUrl: https://maven.fabricmc.net/net/fabricmc/fabric-installer/{{@loaderversion@}}/fabric-installer-{{@loaderversion@}}.jar
 
   # Installer Arguments

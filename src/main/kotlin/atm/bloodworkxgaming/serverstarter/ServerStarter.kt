@@ -24,7 +24,7 @@ class ServerStarter(args: Array<String>) {
     companion object {
         private val rep: Representer = Representer()
         private val options: DumperOptions = DumperOptions()
-        private const val CURRENT_SPEC = 2
+        private const val CURRENT_SPEC = 3
 
         val LOGGER = PrimitiveLogger(File("serverstarter.log"))
         var lockFile: LockFile
@@ -130,7 +130,7 @@ class ServerStarter(args: Array<String>) {
             info(ansi().fgBrightBlue().a("   (Created by ").fgGreen().a("BloodWorkXGaming").fgBrightBlue().a(" with the help of ").fgGreen().a("\"Team RAM\"").fgBrightBlue().a(")"))
             info(ansi().fgRed().a(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::"))
             info("")
-            info("   This jar will launch a Minecraft Forge/Fabric Modded server")
+            info("   This jar will launch a Minecraft server")
             info("")
             info(ansi().a("   Github:    ").fgBrightBlue().a("https://github.com/Yoosk/ServerStarter"))
             info(ansi().a("   Discord:   ").fgBrightBlue().a("https://discord.gg/A3c5YfV"))
@@ -152,22 +152,29 @@ class ServerStarter(args: Array<String>) {
 
         val forgeManager = LoaderManager(config)
         if (lockFile.checkShouldInstall(config) || installOnly) {
-            val packtype = IPackType.createPackType(config.install.modpackFormat, config)
-                    ?: throw InitException("Unknown pack format given in config, shutting down.")
-
-            packtype.installPack()
+            var packtype: IPackType? = null;
+            if (!config.modpack.usePaper) {
+                packtype = IPackType.createPackType(config.install.modpackFormat, config)
+                        ?: throw InitException("Unknown pack format given in config, shutting down.")
+                packtype.installPack()
+            }
             lockFile.packInstalled = true
             lockFile.packUrl = config.install.modpackUrl
             saveLockFile(lockFile)
 
-
             if (config.install.installLoader) {
-                val forgeVersion = packtype.getForgeVersion()
-                val mcVersion = packtype.getMCVersion()
-                forgeManager.installLoader(config.install.baseInstallPath, forgeVersion, mcVersion)
+                if (config.modpack.usePaper) {
+                    val paperBuild = config.install.loaderVersion;
+                    val mcVersion = config.install.mcVersion;
+                    forgeManager.installPaper(config.install.baseInstallPath, paperBuild, mcVersion);
+                } else {
+                    val forgeVersion = packtype.?getForgeVersion()
+                    val mcVersion = packtype.?getMCVersion()
+                    forgeManager.installLoader(config.install.baseInstallPath, forgeVersion, mcVersion)
+                }
             }
 
-            if (config.launch.spongefix) {
+            if (config.launch.spongefix && !config.modpack.usePaper) {
                 lockFile.spongeBootstrapper = forgeManager.installSpongeBootstrapper(config.install.baseInstallPath)
                 saveLockFile(lockFile)
             }

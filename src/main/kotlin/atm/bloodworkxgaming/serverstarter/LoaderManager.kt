@@ -144,6 +144,35 @@ class LoaderManager(private val configFile: ConfigFile) {
 
     }
 
+    fun installPaper(basePath: String, loaderVersion: String, mcVersion: String) {
+        // val versionString = "$mcVersion-$forgeVersion"
+        // val url = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/$versionString/forge-$versionString-installer.jar"
+        val url = configFile.install.installerUrl
+                .replace("{{@loaderversion@}}", loaderVersion)
+                .replace("{{@mcversion@}}", mcVersion)
+        // http://files.minecraftforge.net/maven/net/minecraftforge/forge/1.12.2-14.23.3.2682/forge-1.12.2-14.23.3.2682-installer.jar
+        //val installerPath = File(basePath + "forge-" + versionString + "-installer.jar")
+        val installerPath = File(basePath + configFile.launch.startFile.replace("{{@loaderversion@}}", loaderVersion).replace("{{@mcversion@}}", mcVersion))
+
+        try {
+            LOGGER.info("Attempting to download installer from $url")
+            InternetManager.downloadToFile(url, installerPath)
+            LOGGER.info("Done donwnloading Paper!")
+
+            lockFile.loaderInstalled = true
+            lockFile.loaderVersion = loaderVersion
+            lockFile.mcVersion = mcVersion
+            ServerStarter.saveLockFile(lockFile)
+
+            checkEULA(basePath)
+        } catch (e: IOException) {
+            LOGGER.error("Problem while installing Paper", e)
+        } catch (e: InterruptedException) {
+            LOGGER.error("Problem while installing Paper", e)
+        }
+
+    }
+
     fun installSpongeBootstrapper(basePath: String): String {
         val filename = FilenameUtils.getName(configFile.install.spongeBootstrapper)
         val downloadFile = File(basePath + filename)
@@ -172,7 +201,7 @@ class LoaderManager(private val configFile: ConfigFile) {
             }
 
             val filename =
-                    if (configFile.launch.spongefix) {
+                    if (configFile.launch.spongefix && !configFile.modpack.usePaper) {
                         lockFile.spongeBootstrapper
                     } else {
                         configFile.launch.startFile
